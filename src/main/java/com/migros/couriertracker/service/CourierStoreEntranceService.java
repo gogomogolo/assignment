@@ -19,8 +19,7 @@ public class CourierStoreEntranceService implements CourierLocationObserver {
     private final StoreLocationRepository storeLocationRepository;
     private final CourierEntranceLookupRepository courierEntranceLookupRepository;
 
-    private final static Distance DISTANCE_IN_METERS = new Distance(1, Metrics.KILOMETERS);
-    private final static long EXPIRATION_TIME_IN_MIN = 1L;
+    private final static Distance DISTANCE_IN_METERS = new Distance(0.1, Metrics.KILOMETERS);
 
     @Autowired
     public CourierStoreEntranceService(
@@ -47,15 +46,13 @@ public class CourierStoreEntranceService implements CourierLocationObserver {
             storeLocations.forEach(storeLocationGeoResult -> {
                 var storeLocation = storeLocationGeoResult.getContent();
                 String storeName = storeLocation.getName();
-                var courierEntranceLookup = courierEntranceLookupRepository
-                        .findByCourierIdAndAndStoreName(courierId, storeName);
+                String key = String.format("%s:%s", courierId, storeName);
+                var courierEntranceLookup = courierEntranceLookupRepository.findById(key);
 
-                if (courierEntranceLookup.isEmpty()){
+                if (!courierEntranceLookup.isPresent()){
                     CourierEntranceLookup newCourierEntranceLookup = CourierEntranceLookup
                             .builder()
-                            .courierId(courierId)
-                            .storeName(storeName)
-                            .expiration(EXPIRATION_TIME_IN_MIN)
+                            .courierIdStoreName(key)
                             .build();
                     courierEntranceLookupRepository.save(newCourierEntranceLookup);
                     log.info(

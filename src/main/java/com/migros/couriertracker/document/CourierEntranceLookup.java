@@ -6,23 +6,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
-import org.springframework.data.redis.core.TimeToLive;
-import org.springframework.data.redis.core.index.Indexed;
 
-import java.util.concurrent.TimeUnit;
+import java.io.Serializable;
 
 @Builder
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@RedisHash("courierEntranceLookup")
-public class CourierEntranceLookup {
+@RedisHash(value = "courierEntrance",timeToLive = 60L)
+public class CourierEntranceLookup implements Serializable {
     @Id
-    private String courierId;
-
-    @Indexed
-    private String storeName;
-
-    @TimeToLive(unit = TimeUnit.MINUTES)
-    private Long expiration;
+    private String courierIdStoreName;
 }
