@@ -81,7 +81,7 @@ public class CourierLocationHistoryService implements CourierLocationObserver {
                 .courierDateKey(CourierDateKey.builder().courierId(courierLocation.getCourierId()).date(courierLocation.getDate()).build())
                 .courierId(courierLocation.getCourierId())
                 .date(courierLocation.getDate())
-                .location(new Point(courierLocation.getLatitude(), courierLocation.getLongitude()))
+                .location(new Point(courierLocation.getLongitude(), courierLocation.getLatitude()))
                 .build();
         courierLocationHistoryRepository.save(courierLocationHistory);
     }

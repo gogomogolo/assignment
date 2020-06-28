@@ -26,7 +26,7 @@ public class StoreLocationController {
         StoreLocation storeLocation = StoreLocation
                 .builder()
                 .name(store.getName())
-                .location(new Point(store.getLat(), store.getLng()))
+                .coordinate(new Point(store.getLng(), store.getLat()))
                 .build();
         StoreLocation result = storeLocationRepository.save(storeLocation);
         return ResponseEntity.status(HttpStatus.CREATED).body(result);

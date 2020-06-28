@@ -19,7 +19,7 @@ public class CourierStoreEntranceService implements CourierLocationObserver {
     private final StoreLocationRepository storeLocationRepository;
     private final CourierEntranceLookupRepository courierEntranceLookupRepository;
 
-    private final static Distance DISTANCE_IN_METERS = new Distance(0.1, Metrics.KILOMETERS);
+    private final static Distance DISTANCE_IN_METERS = new Distance(1, Metrics.KILOMETERS);
     private final static long EXPIRATION_TIME_IN_MIN = 1L;
 
     @Autowired
@@ -39,30 +39,33 @@ public class CourierStoreEntranceService implements CourierLocationObserver {
         double latitude = courierLocation.getLatitude();
         double longitude = courierLocation.getLongitude();
 
-        Point courierPoint = new Point(latitude, longitude);
-        var storeLocations = storeLocationRepository
-                .findByLocationNear(courierPoint, DISTANCE_IN_METERS);
+        Point courierPoint = new Point(longitude, latitude);
+        var geoResults = storeLocationRepository.findByCoordinateNear(courierPoint, DISTANCE_IN_METERS);
+        var storeLocations = geoResults.getContent();
 
-        storeLocations.ifPresent(locations -> locations.forEach(storeLocation -> {
-            String storeName = storeLocation.getName();
-            var courierEntranceLookup = courierEntranceLookupRepository
-                    .findByCourierIdAndAndStoreName(courierId, storeName);
+        if (!storeLocations.isEmpty()){
+            storeLocations.forEach(storeLocationGeoResult -> {
+                var storeLocation = storeLocationGeoResult.getContent();
+                String storeName = storeLocation.getName();
+                var courierEntranceLookup = courierEntranceLookupRepository
+                        .findByCourierIdAndAndStoreName(courierId, storeName);
 
-            if (courierEntranceLookup.isEmpty()){
-                CourierEntranceLookup newCourierEntranceLookup = CourierEntranceLookup
-                        .builder()
-                        .courierId(courierId)
-                        .storeName(storeName)
-                        .expiration(EXPIRATION_TIME_IN_MIN)
-                        .build();
-                courierEntranceLookupRepository.save(newCourierEntranceLookup);
-                log.info(
-                        "Courier with id: <{}> is entering the near of store with name: <{}>",
-                        courierId,
-                        storeName
-                );
-            }
-        }));
+                if (courierEntranceLookup.isEmpty()){
+                    CourierEntranceLookup newCourierEntranceLookup = CourierEntranceLookup
+                            .builder()
+                            .courierId(courierId)
+                            .storeName(storeName)
+                            .expiration(EXPIRATION_TIME_IN_MIN)
+                            .build();
+                    courierEntranceLookupRepository.save(newCourierEntranceLookup);
+                    log.info(
+                            "Courier with id: <{}> is entering the near of store with name: <{}>",
+                            courierId,
+                            storeName
+                    );
+                }
+            });
+        }
     }
 
     @Override
