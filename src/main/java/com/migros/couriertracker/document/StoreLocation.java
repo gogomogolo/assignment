@@ -16,6 +16,6 @@ public class StoreLocation {
     @Id
     private String name;
 
-    @GeoSpatialIndexed(type = GeoSpatialIndexType.GEO_2D)
+    @GeoSpatialIndexed(type = GeoSpatialIndexType.GEO_2DSPHERE)
     private Point coordinate;
 }

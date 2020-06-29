@@ -8,3 +8,21 @@ spring:
         input:
           destination: courierLocationTopic
 
+  kafka:
+    bootstrap-servers: kafka:9092
+
+  data:
+    mongodb:
+      host: mongodb
+      port: 27017
+      database: migrosdb
+      username: couriertracker
+      password: password
+
+  redis:
+    host: redis
+    port: 6379
+
+
+
+
