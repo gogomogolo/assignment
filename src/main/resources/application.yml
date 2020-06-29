@@ -15,9 +15,6 @@ spring:
     mongodb:
       host: mongodb
       port: 27017
-      database: migrosdb
-      username: couriertracker
-      password: password
 
   redis:
     host: redis
